@@ -1,8 +1,7 @@
 import pandas as pd
 from pandas import DataFrame,Series
 import numpy as np
-from sklearn import linear_model
-from sklearn import neighbors
+from sklearn import linear_model,neighbors , svm ,tree
 
 def ridge_regression(x_train, y_train, x_test):
 	model = linear_model.Ridge()
@@ -27,7 +26,19 @@ def bayesian_regression(x_train,y_train,x_test):
 	model.fit(x_train,y_train)
 	
 	return model.predict(x_test)
+
+def suppor_vector_machine(x_train,y_train,x_test):
+	model = svm.SVR()
+	model.fit(x_train,y_train)
 	
+	return model.predict(x_test)
+	
+def decision_tree(x_train,y_train,x_test):
+	model = tree.DecisionTreeRegressor(max_depth=3)
+	model.fit(x_train,y_train)
+	
+	return model.predict(x_test)
+
 def calc_error(y_test, y_predict):
 
 	err = 0
@@ -63,7 +74,10 @@ if __name__ == "__main__":
 	
 	choice = -1
 	while True:
-		choice = int(input("\nChoose an algorithm: \n1.Simple Linear Regression\n2.KNN Regression\n3.Bayesian Regression.\n4.\n5.Ridge Regression\n0. exit\n"))
+		choice = int(input("\nChoose an algorithm: \n1.Simple Linear Regression\n2.KNN Regression\n"
+													+"3.Bayesian Regression.\n4.SVM\n5.Ridge Regression\n"
+													+"6.Decision Tree\n"
+													+"0. exit\n"))
 
 		if choice == 1:
 			y_predict = simple_linear_regression(x_train, y_train, x_test)
@@ -75,9 +89,13 @@ if __name__ == "__main__":
 			y_predict= bayesian_regression(x_train,y_train,x_test)
 			calc_error(y_test,y_predict)
 		elif choice == 4:
-			pass
+			y_predict=suppor_vector_machine(x_train,y_train,x_test)
+			calc_error(y_test,y_predict)
 		elif choice == 5:
 			y_predict = ridge_regression(x_train, y_train, x_test)
+			calc_error(y_test, y_predict)
+		elif choice == 6:
+			y_predict = decision_tree(x_train, y_train, x_test)
 			calc_error(y_test, y_predict)
 		elif choice == 0:
 			break
