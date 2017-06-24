@@ -2,6 +2,7 @@ import pandas as pd
 from pandas import DataFrame,Series
 import numpy as np
 from sklearn import linear_model
+from sklearn import neighbors
 
 def ridge_regression(x_train, y_train, x_test):
 	model = linear_model.Ridge()
@@ -14,7 +15,18 @@ def simple_linear_regression(x_train, y_train, x_test):
 	model.fit(x_train, y_train)
 	
 	return model.predict(x_test)
+
+def knn_regression(x_train,y_train,x_test):
+	model=neighbors.KNeighborsRegressor(5,weights='uniform')
+	model.fit(x_train,y_train)
+
+	return model.predict(x_test)
+
+def bayesian_regression(x_train,y_train,x_test):
+	model=linear_model.BayesianRidge()
+	model.fit(x_train,y_train)
 	
+	return model.predict(x_test)
 	
 def calc_error(y_test, y_predict):
 
@@ -42,24 +54,26 @@ if __name__ == "__main__":
 	x_train.drop(['imdb_score'],axis = 1, inplace = True)
 	x_train = x_train.fillna(0)
 
-	x_test = data[2000:]
+	x_test = data[4000:]
 	y_test = x_test['imdb_score']
 	x_test = x_test.drop(['imdb_score'], axis = 1)
 
-	x_train = x_train[:2000]
-	y_train = y_train[:2000]
+	x_train = x_train[:4000]
+	y_train = y_train[:4000]
 	
 	choice = -1
 	while True:
-		choice = int(input("\nChoose an algorithm: \n1.Simple Linear Regression\n2.\n3.\n4.\n5.Ridge Regression\n0. exit\n"))
+		choice = int(input("\nChoose an algorithm: \n1.Simple Linear Regression\n2.KNN Regression\n3.Bayesian Regression.\n4.\n5.Ridge Regression\n0. exit\n"))
 
 		if choice == 1:
 			y_predict = simple_linear_regression(x_train, y_train, x_test)
 			calc_error(y_test, y_predict)
 		elif choice == 2:
-			pass
+			y_predict = knn_regression(x_train,y_train,x_test)
+			calc_error(y_test,y_predict)
 		elif choice == 3:
-			pass
+			y_predict= bayesian_regression(x_train,y_train,x_test)
+			calc_error(y_test,y_predict)
 		elif choice == 4:
 			pass
 		elif choice == 5:
