@@ -9,6 +9,13 @@ def ridge_regression(x_train, y_train, x_test):
 
 	return model.predict(x_test)
 	
+def simple_linear_regression(x_train, y_train, x_test):
+	model = linear_model.LinearRegression()
+	model.fit(x_train, y_train)
+	
+	return model.predict(x_test)
+	
+	
 def calc_error(y_test, y_predict):
 
 	err = 0
@@ -44,14 +51,19 @@ if __name__ == "__main__":
 	
 	choice = -1
 	while True:
-		choice = int(input("\nChoose an algorithm: \n1.Ridge Regression\n2.\n3.\n0. exit\n"))
+		choice = int(input("\nChoose an algorithm: \n1.Simple Linear Regression\n2.\n3.\n4.\n5.Ridge Regression\n0. exit\n"))
 
 		if choice == 1:
-			y_predict = ridge_regression(x_train, y_train, x_test)
+			y_predict = simple_linear_regression(x_train, y_train, x_test)
 			calc_error(y_test, y_predict)
 		elif choice == 2:
 			pass
 		elif choice == 3:
 			pass
+		elif choice == 4:
+			pass
+		elif choice == 5:
+			y_predict = ridge_regression(x_train, y_train, x_test)
+			calc_error(y_test, y_predict)
 		elif choice == 0:
 			break
