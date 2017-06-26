@@ -54,23 +54,33 @@ def calc_error(y_test, y_predict):
 	print(s / len(x_test))
 
 if __name__ == "__main__":
-	data = DataFrame(pd.read_csv('movie_metadata.csv'))
-	data = data[data.dtypes[data.dtypes!='object'].index]
-	data = data.fillna(0)
-	df_norm = (data - data.mean()) / (data.max() - data.min()) + 1
+	f = pd.read_csv("movie_metadata.csv")
+
+	data=DataFrame(f)
+
+	cols=data.dtypes[data.dtypes!='object'].index
+	#cols=['duration','num_voted_users','imdb_score']
+	x=data[cols]
+
+	x=x.fillna(0)	
 
 
-	x_train = data[data.dtypes[data.dtypes != 'object'].index]
-	y_train = data['imdb_score']
-	x_train.drop(['imdb_score'],axis = 1, inplace = True)
-	x_train = x_train.fillna(0)
+	y=x['imdb_score']
+	x.drop(['imdb_score'],axis=1,inplace=True)
 
-	x_test = data[4000:]
-	y_test = x_test['imdb_score']
-	x_test = x_test.drop(['imdb_score'], axis = 1)
+	x=x.values
+	y=np.asarray(y)
 
-	x_train = x_train[:4000]
-	y_train = y_train[:4000]
+	x=np.asarray(x)
+
+	number_of_samples = len(y)
+	np.random.seed(8)
+	random_indices = np.random.permutation(number_of_samples)
+	num_training_samples = int(number_of_samples*0.75)
+	x_train = x[random_indices[:num_training_samples]]
+	y_train=y[random_indices[:num_training_samples]]
+	x_test=x[random_indices[num_training_samples:]]
+	y_test=y[random_indices[num_training_samples:]]
 	
 	choice = -1
 	while True:
