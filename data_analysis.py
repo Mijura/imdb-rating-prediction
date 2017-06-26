@@ -6,6 +6,8 @@ import matplotlib.pyplot as plt
 from pandas import *
 import numpy as np
 import seaborn as sns
+from sklearn.preprocessing import StandardScaler
+from sklearn.decomposition import PCA
 
 class FullScreenApp(object):
 
@@ -47,6 +49,7 @@ class FullScreenApp(object):
 		self.add_scatter_plot_frame()
 		self.add_boxplot_frame()
 		self.add_correlation_frame()
+		self.add_PCA_frame()
 	
 	def add_scatter_plot_frame(self):
 		self.basic_plot_frame = Frame(self.master)
@@ -139,6 +142,43 @@ class FullScreenApp(object):
 		B = Button(self.correlation_frame, text ="Generate Correlation", command = self.generate_correlation)
 		B.pack(anchor = W, padx=10, pady=10)
 	
+	def add_PCA_frame(self):
+		
+		self.left2 = Label(self.correlation_frame, text="To see PCA press button:")
+		self.left2.pack(pady=10)
+		
+		B = Button(self.correlation_frame, text ="Generate PCA", command = self.generate_PCA)
+		B.pack(anchor = W, padx=10, pady=10)
+	
+	def generate_PCA(self):
+		data=DataFrame(self.data)
+
+		cols=data.dtypes[data.dtypes!='object'].index
+
+		x=data[cols]
+		x=x.fillna(0)	
+		x.drop(['imdb_score'],axis=1,inplace=True)
+		x=x.values
+		x=np.asarray(x)
+
+		X_std=StandardScaler().fit_transform(x)
+		mean_vec = np.mean(X_std, axis=0)
+		cov_mat = np.cov(X_std.T)
+		eig_vals, eig_vecs = np.linalg.eig(cov_mat)
+
+		tot = sum(eig_vals)
+		var_exp = [(i/tot)*100 for i in sorted(eig_vals, reverse=True)] # Individual explained variance
+		cum_var_exp = np.cumsum(var_exp) # Cumulative explained variance
+
+
+		plt.figure(figsize=(10, 5))
+		plt.bar(range(len(var_exp)), var_exp, alpha=0.3333, align='center', label='individual explained variance', color = 'g')
+		plt.step(range(len(cum_var_exp)), cum_var_exp, where='mid',label='cumulative explained variance')
+		plt.ylabel('Explained variance ratio')
+		plt.xlabel('Principal components')
+		plt.legend(loc='best')
+		plt.show()
+		
 	def generate_scatter_plot(self):
 		self.basic_plot(self.columns[self.var1.get()])
 	
