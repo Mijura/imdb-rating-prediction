@@ -5,6 +5,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from pandas import *
 import numpy as np
+import seaborn as sns
 
 class FullScreenApp(object):
 
@@ -45,7 +46,7 @@ class FullScreenApp(object):
 		self.set_image()
 		self.add_scatter_plot_frame()
 		self.add_boxplot_frame()
-		
+		self.add_correlation_frame()
 	
 	def add_scatter_plot_frame(self):
 		self.basic_plot_frame = Frame(self.master)
@@ -127,12 +128,32 @@ class FullScreenApp(object):
 		
 		B = Button(self.boxplot_frame, text ="Generate Boxplot", command = self.generate_boxplot)
 		B.pack(anchor = W, padx=10, pady=10)
+		
+	def add_correlation_frame(self):
+		self.correlation_frame = Frame(self.master)
+		self.correlation_frame.grid(row=0, column=4, padx=50, pady=30, sticky="NW")
+		
+		self.left = Label(self.correlation_frame, text="To see correlation press button:")
+		self.left.pack(pady=10)
+		
+		B = Button(self.correlation_frame, text ="Generate Correlation", command = self.generate_correlation)
+		B.pack(anchor = W, padx=10, pady=10)
 	
 	def generate_scatter_plot(self):
 		self.basic_plot(self.columns[self.var1.get()])
 	
 	def generate_boxplot(self):
 		self.boxplot(self.columns[self.var.get()])
+		
+	def generate_correlation(self):
+		m=DataFrame(self.data).corr()
+		plt.figure(figsize=(10,10))
+		sns.heatmap(m,vmax=1,annot=True)
+		plt.yticks(rotation=0) 
+		plt.xticks(rotation=90)
+		mng = plt.get_current_fig_manager()
+		mng.window.showMaximized()
+		plt.show()
 	
 	def set_image(self):
 		self.image = tk.PhotoImage(file="image.gif")
