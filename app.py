@@ -2,7 +2,9 @@ import pandas as pd
 from pandas import DataFrame,Series
 import numpy as np
 from sklearn import linear_model,neighbors , svm ,tree
-
+import matplotlib
+import matplotlib.pyplot as plt
+matplotlib.rcParams['figure.figsize'] = (6.0, 6.0)
 def ridge_regression(x_train, y_train, x_test):
 	model = linear_model.Ridge()
 	model.fit(x_train, y_train)
@@ -45,13 +47,21 @@ def calc_error(y_test, y_predict):
 	s = 0
 
 	for y, yp in zip(y_test, y_predict) :
-		print(y, yp)
 		s += abs(y - yp)
 		err += (y - yp) ** 2
 
-	print(err, len(x_test))
+	print("MSE:")
 	print(err / len(x_test))
+	print("Average error:")
 	print(s / len(x_test))
+
+def residual_plot(y_test,y_predict):
+	preds = pd.DataFrame({"preds":y_predict, "true":y_test})
+	preds["residuals"] = preds["true"] - preds["preds"]
+	preds.plot(x = "preds", y = "residuals",kind = "scatter")
+	plt.title("Residual plot")
+	plt.show()
+
 
 if __name__ == "__main__":
 	f = pd.read_csv("movie_metadata.csv")
@@ -92,20 +102,26 @@ if __name__ == "__main__":
 		if choice == 1:
 			y_predict = simple_linear_regression(x_train, y_train, x_test)
 			calc_error(y_test, y_predict)
+			residual_plot(y_test, y_predict)
 		elif choice == 2:
 			y_predict = knn_regression(x_train,y_train,x_test)
 			calc_error(y_test,y_predict)
+			residual_plot(y_test,y_predict)
 		elif choice == 3:
 			y_predict= bayesian_regression(x_train,y_train,x_test)
 			calc_error(y_test,y_predict)
+			residual_plot(y_test,y_predict)
 		elif choice == 4:
 			y_predict=suppor_vector_machine(x_train,y_train,x_test)
 			calc_error(y_test,y_predict)
+			residual_plot(y_test,y_predict)
 		elif choice == 5:
 			y_predict = ridge_regression(x_train, y_train, x_test)
 			calc_error(y_test, y_predict)
+			residual_plot(y_test,y_predict)
 		elif choice == 6:
 			y_predict = decision_tree(x_train, y_train, x_test)
 			calc_error(y_test, y_predict)
+			residual_plot(y_test,y_predict)
 		elif choice == 0:
 			break
