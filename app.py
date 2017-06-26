@@ -1,7 +1,7 @@
 import pandas as pd
 from pandas import DataFrame,Series
 import numpy as np
-from sklearn import linear_model,neighbors , svm ,tree
+from sklearn import linear_model,neighbors , svm ,tree,ensemble
 import matplotlib
 import matplotlib.pyplot as plt
 matplotlib.rcParams['figure.figsize'] = (6.0, 6.0)
@@ -18,7 +18,13 @@ def simple_linear_regression(x_train, y_train, x_test):
 	return model.predict(x_test)
 
 def knn_regression(x_train,y_train,x_test):
-	model=neighbors.KNeighborsRegressor(5,weights='uniform')
+	model=neighbors.KNeighborsRegressor(10,weights='uniform')
+	model.fit(x_train,y_train)
+
+	return model.predict(x_test)
+
+def lasso(x_train,y_train,x_test):
+	model = linear_model.Lasso(alpha=0.1)
 	model.fit(x_train,y_train)
 
 	return model.predict(x_test)
@@ -36,7 +42,13 @@ def suppor_vector_machine(x_train,y_train,x_test):
 	return model.predict(x_test)
 	
 def decision_tree(x_train,y_train,x_test):
-	model = tree.DecisionTreeRegressor(max_depth=3)
+	model = tree.DecisionTreeRegressor(max_depth=7)
+	model.fit(x_train,y_train)
+	
+	return model.predict(x_test)
+
+def random_forest(x_train,y_train,x_test):
+	model = ensemble.RandomForestRegressor(n_estimators=10)
 	model.fit(x_train,y_train)
 	
 	return model.predict(x_test)
@@ -84,7 +96,7 @@ if __name__ == "__main__":
 	x=np.asarray(x)
 
 	number_of_samples = len(y)
-	np.random.seed(8)
+	np.random.seed(15)
 	random_indices = np.random.permutation(number_of_samples)
 	num_training_samples = int(number_of_samples*0.75)
 	x_train = x[random_indices[:num_training_samples]]
@@ -95,8 +107,8 @@ if __name__ == "__main__":
 	choice = -1
 	while True:
 		choice = int(input("\nChoose an algorithm: \n1.Simple Linear Regression\n2.KNN Regression\n"
-													+"3.Bayesian Regression.\n4.SVM\n5.Ridge Regression\n"
-													+"6.Decision Tree\n"
+													+"3.Bayesian Regression.\n4.SVR\n5.Ridge Regression\n"
+													+"6.Decision Tree\n7.Lasso\n8.Random Forest\n"
 													+"0. exit\n"))
 
 		if choice == 1:
@@ -121,6 +133,14 @@ if __name__ == "__main__":
 			residual_plot(y_test,y_predict)
 		elif choice == 6:
 			y_predict = decision_tree(x_train, y_train, x_test)
+			calc_error(y_test, y_predict)
+			residual_plot(y_test,y_predict)
+		elif choice == 7 :
+			y_predict = lasso(x_train, y_train, x_test)
+			calc_error(y_test, y_predict)
+			residual_plot(y_test,y_predict)
+		elif choice == 8 :
+			y_predict = random_forest(x_train, y_train, x_test)
 			calc_error(y_test, y_predict)
 			residual_plot(y_test,y_predict)
 		elif choice == 0:
