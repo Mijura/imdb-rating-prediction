@@ -5,6 +5,9 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from pandas import *
 import numpy as np
+import seaborn as sns
+from sklearn.preprocessing import StandardScaler
+from sklearn.decomposition import PCA
 
 class FullScreenApp(object):
 
@@ -43,11 +46,59 @@ class FullScreenApp(object):
 		
 		self.data = pd.read_csv('movie_metadata.csv', encoding = "ISO-8859-1")
 		self.set_image()
+		self.add_scatter_plot_frame()
 		self.add_boxplot_frame()
+		self.add_correlation_frame()
+		self.add_PCA_frame()
+	
+	def add_scatter_plot_frame(self):
+		self.basic_plot_frame = Frame(self.master)
+		self.basic_plot_frame.grid(row=0, column=2, padx=50, pady=30, sticky="NW")
+
+		self.var1 = IntVar()
 		
+		self.left = Label(self.basic_plot_frame, text="Choose column for scatter plot:")
+		self.left.pack(pady=10)
+		
+		R1 = Radiobutton(self.basic_plot_frame, text="Number of Reviews by Critics", variable=self.var1, value=3)
+		R1.pack(anchor = W)
+		
+		R2 = Radiobutton(self.basic_plot_frame, text="Duration", variable=self.var1, value=4)
+		R2.pack(anchor = W)
+
+		R3 = Radiobutton(self.basic_plot_frame, text="Director Facebook Likes", variable=self.var1, value=5)
+		R3.pack(anchor = W)
+
+		R4 = Radiobutton(self.basic_plot_frame, text="Actor 1 Facebook Likes", variable=self.var1, value=8)
+		R4.pack(anchor = W)
+
+		R5 = Radiobutton(self.basic_plot_frame, text="Actor 2 Facebook Likes", variable=self.var1, value=25)
+		R5.pack(anchor = W)
+		
+		R6 = Radiobutton(self.basic_plot_frame, text="Actor 3 Facebook Likes", variable=self.var1, value=6)
+		R6.pack(anchor = W)
+		
+		R7 = Radiobutton(self.basic_plot_frame, text="Gross", variable=self.var1, value=9)
+		R7.pack(anchor = W)
+		
+		R8 = Radiobutton(self.basic_plot_frame, text="Number Voted Users", variable=self.var1, value=13)
+		R8.pack(anchor = W)
+		
+		R9 = Radiobutton(self.basic_plot_frame, text="Cast Total Facebook Likes", variable=self.var1, value=14)
+		R9.pack(anchor = W)
+		
+		R10 = Radiobutton(self.basic_plot_frame, text="Budget", variable=self.var1, value=23)
+		R10.pack(anchor = W)
+		
+		R11 = Radiobutton(self.basic_plot_frame, text="Movie Facebook Likes", variable=self.var1, value=28)
+		R11.pack(anchor = W)
+		
+		B = Button(self.basic_plot_frame, text ="Generate Scatter Plot", command = self.generate_scatter_plot)
+		B.pack(anchor = W, padx=10, pady=10)
+	
 	def add_boxplot_frame(self):
 		self.boxplot_frame = Frame(self.master)
-		self.boxplot_frame.grid(row=0, column=2, padx=10, pady=30, sticky="NW")
+		self.boxplot_frame.grid(row=0, column=3, padx=50, pady=30, sticky="NW")
 
 		self.var = IntVar()
 		
@@ -80,26 +131,109 @@ class FullScreenApp(object):
 		
 		B = Button(self.boxplot_frame, text ="Generate Boxplot", command = self.generate_boxplot)
 		B.pack(anchor = W, padx=10, pady=10)
+		
+	def add_correlation_frame(self):
+		self.correlation_frame = Frame(self.master)
+		self.correlation_frame.grid(row=0, column=4, padx=50, pady=30, sticky="NW")
+		
+		self.left = Label(self.correlation_frame, text="To see correlation press button:")
+		self.left.pack(pady=10)
+		
+		B = Button(self.correlation_frame, text ="Generate Correlation", command = self.generate_correlation)
+		B.pack(anchor = W, padx=10, pady=10)
+	
+	def add_PCA_frame(self):
+		
+		self.left2 = Label(self.correlation_frame, text="To see PCA press button:")
+		self.left2.pack(pady=10)
+		
+		B = Button(self.correlation_frame, text ="Generate PCA", command = self.generate_PCA)
+		B.pack(anchor = W, padx=10, pady=10)
+	
+	def generate_PCA(self):
+		data=DataFrame(self.data)
+
+		cols=data.dtypes[data.dtypes!='object'].index
+
+		x=data[cols]
+		x=x.fillna(0)	
+		x.drop(['imdb_score'],axis=1,inplace=True)
+		x=x.values
+		x=np.asarray(x)
+
+		X_std=StandardScaler().fit_transform(x)
+		mean_vec = np.mean(X_std, axis=0)
+		cov_mat = np.cov(X_std.T)
+		eig_vals, eig_vecs = np.linalg.eig(cov_mat)
+
+		tot = sum(eig_vals)
+		var_exp = [(i/tot)*100 for i in sorted(eig_vals, reverse=True)] # Individual explained variance
+		cum_var_exp = np.cumsum(var_exp) # Cumulative explained variance
+
+
+		plt.figure(figsize=(10, 5))
+		plt.bar(range(len(var_exp)), var_exp, alpha=0.3333, align='center', label='individual explained variance', color = 'g')
+		plt.step(range(len(cum_var_exp)), cum_var_exp, where='mid',label='cumulative explained variance')
+		plt.ylabel('Explained variance ratio')
+		plt.xlabel('Principal components')
+		plt.legend(loc='best')
+		plt.show()
+		
+	def generate_scatter_plot(self):
+		self.basic_plot(self.columns[self.var1.get()])
 	
 	def generate_boxplot(self):
-		selection = "You selected the option " + str(self.var.get())
 		self.boxplot(self.columns[self.var.get()])
+		
+	def generate_correlation(self):
+		m=DataFrame(self.data).corr()
+		plt.figure(figsize=(10,10))
+		sns.heatmap(m,vmax=1,annot=True)
+		plt.yticks(rotation=0) 
+		plt.xticks(rotation=90)
+		mng = plt.get_current_fig_manager()
+		mng.window.showMaximized()
+		plt.show()
 	
 	def set_image(self):
 		self.image = tk.PhotoImage(file="image.gif")
 		self.image = self.image.subsample(2,2)
 		self.label = tk.Label(image=self.image)
 		self.label.grid(row=0, column=1, padx=10, pady=10)
-		#self.label.pack()
-
-	def newselection(self, event):
-		self.value_of_combo = self.box.get()
-		print(self.value_of_combo)
 		
 	def modify_name(self, column):
 		column = column.replace('_', ' ')
 		return column.title()
+	
+	def basic_plot(self, column):
+		grp = self.data["imdb_score"].groupby(self.data[column])
+		data=[]
+		numbers=[]
+		labels=[]
+		i=1
+		x_axis = []
+		y_axis = []
+		for x in grp.groups.keys():
+			numbers.append(i)
+			labels.append(x)
+			temp = list(grp.get_group(x))
+			x_axis = x_axis + temp
+			y_axis = y_axis + [int(x)]*len(temp)
+			
+			i=i+1
+	
+		plt.scatter(y_axis, x_axis, facecolors='none', edgecolors='c')
+		#plt.xticks(numbers, labels, rotation='vertical')
+		plt.title("IMDB Score vs "+self.modify_name(str(column)))
 		
+		plt.xlabel(self.modify_name(str(column)), fontsize=14)
+		plt.ylabel('IMDB Score', fontsize=14)
+		
+		mng = plt.get_current_fig_manager()
+		mng.window.showMaximized()
+		
+		plt.show()
+	
 	def boxplot(self, column):
 		grp = self.data["imdb_score"].groupby(self.data[column])
 		data=[]
