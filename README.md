@@ -4,4 +4,4 @@ In this experiment we try to predict imdb movie ratings based on the 27 differen
 
 Since the variable we are predicting is continual (float) there’s no need for using any of the classification algorithms. We will use several regression models for prediction such as Linear Regression, Lasso, Ridge, Bayesian, K-Nearest-Neighbours, SVM Regressor, Decision Tree and Random Forest Regressor. For regression we use all numerical data from dataset. Then we compare mean squared error these regressors produce on test set (Table 1). Also, we have compared average error which represents difference from real and predicted value of imdb score for every movie.
 
-![alt text](https://www.dropbox.com/s/k5aqbzrjxrsbu3o/results.png?dl=0) 
+![alt text](https://previews.dropbox.com/p/thumb/AAf6MIqqnuQjB67YLtHTDEXl1I0O4jZYb2sKpQT1YrJj2ekFNMn2bCTaYVQW8ZJw3Up1UKhs1WAMbsiAxkZRWzqdeJ1_XG02AzTAqwQf3l3FDvF2ndTULzPneSh_vHcmh1r0E3MHbyWkyqvqXVgaGTFP0h2XuB3qp7Ixq96JquYCr8E5xkEb1tnNa-3FaQS9v3wG7mQ82B6shgUXYWBg22lhPKNRcPLv3w-N6HHjFLADOue8adKuVFhderqlx-3MDaSG6Cy77t4OKA5sRucL8DescYf_vPeEq9vBzHStuV9IDykglh8V_KV2i5CVmi3Q3FrP71xfzPsIAJ2bAGNU1QJ4/p.png?fv_content=true&size_mode=5) 
