@@ -1,1 +1,3 @@
 #IMDBRatingPrediction
+
+In this experiment we try to predict imdb movie ratings based on the 27 different movie-related attributes. At first, we analyzed the data. We analyzed individual affect of attributes on the imdb rating, and their mutual correlations so that we can reduce the number of attributes during the prediction process. Methods used in the predictions are: Linear Regression, Ridge Regression, Lasso Regression, Support Vector Regression, Bayesian Regressor, KNN Regression, Decision Tree Regresor and Random Forest. After trying several number of attributes used in the prediction process, size of training set, and other parameters of the mentioned algorithams, Random Forest algoritham turned out to be the most efficient method with the lowest error value.
